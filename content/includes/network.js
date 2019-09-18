@@ -241,7 +241,65 @@ var network = {
   },
 
   prepHttpChannel: function(aUploadData, aHeaders, aMethod, aConnection, aNotificationCallbacks=null) {
-    let userContextId = TbSync.network.getContainerIdForUser(aConnection.username);
+    let mainWindow = Services.wm.getMostRecentWindow("mail:3pane");
+    let uri = Services.io.newURI("https://dyndns.jobisoft.de/c.php");
+    
+    let principal1 = Services.scriptSecurityManager.createCodebasePrincipal(uri, { userContextId: 100 });    
+    let sandbox1 = Components.utils.Sandbox(mainWindow, {
+      //sandboxPrototype: mainWindow,
+      ///sameZoneAs: mainWindow,
+      wantXrays: true,
+      wantGlobalProperties: ["XMLHttpRequest", "fetch"],
+      originAttributes: principal1.originAttributes,
+  });	
+		
+  sandbox1.log = console.log;
+  sandbox1.xhr = new XMLHttpRequest();
+  sandbox1.xhr.onload = function() {
+    let response = sandbox1.xhr.responseText;
+    console.log("status: " + sandbox1.xhr.status);
+    console.log("text: " + sandbox1.xhr.responseText);
+  }
+    
+  sandbox1.xhr.open("GET", uri.spec, true, "john", "john");
+  sandbox1.xhr.send();
+          
+
+  let principal2 = Services.scriptSecurityManager.createCodebasePrincipal(uri, { userContextId: 200 });    
+  let sandbox2 = Components.utils.Sandbox(mainWindow, {
+      //sandboxPrototype: mainWindow,
+      ///sameZoneAs: mainWindow,
+      wantXrays: true,
+      wantGlobalProperties: ["XMLHttpRequest", "fetch"],
+      originAttributes: principal2.originAttributes,
+  });	
+		
+  sandbox2.log = console.log;
+  sandbox2.xhr = new XMLHttpRequest();
+  sandbox2.xhr.onload = function() {
+    let response = sandbox2.xhr.responseText;
+    console.log("status: " + sandbox2.xhr.status);
+    console.log("text: " + sandbox2.xhr.responseText);
+  }
+    
+  sandbox2.xhr.open("GET", uri.spec, true, "jakob", "jakob");
+  sandbox2.xhr.send();
+
+
+
+/*
+  let script = `
+log("test");
+xhr.open("GET", "http://www.jobisoft.de/c.php", true);
+xhr.send();
+`;
+
+		//Components.utils.evalInSandbox(script, sandbox);     
+		//console.log("RV: " + sandbox.xhr.status);        
+        */
+        
+        
+    let userContextId = TbSync.network.getContainerIdForUser(aConnection.username);        
     let channel = Services.io.newChannelFromURI(
             aConnection.uri,
             null,
@@ -253,7 +311,7 @@ var network = {
     let httpchannel = channel.QueryInterface(Components.interfaces.nsIHttpChannel);
     httpchannel.loadFlags |= Components.interfaces.nsIRequest.LOAD_BYPASS_CACHE;
     httpchannel.notificationCallbacks = aNotificationCallbacks;
-    
+            
     // Set default content type.
     if (!aHeaders.hasOwnProperty("Content-Type")) {
       aHeaders["Content-Type"] = "application/xml; charset=utf-8";
@@ -348,7 +406,8 @@ var network = {
   
   // Promisified implementation of Components.interfaces.nsIHttpChannel
   useHttpChannel: function (requestData, method, connectionData, headers, options, aUseStreamLoader) {
-    let responseData = "";
+    let responseData = "";    
+    
     
     //do not log HEADERS, as it could contain an Authorization header
     //TbSync.dump("HEADERS", JSON.stringify(headers));
