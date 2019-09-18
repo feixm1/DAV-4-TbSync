@@ -241,49 +241,35 @@ var network = {
   },
 
   prepHttpChannel: function(aUploadData, aHeaders, aMethod, aConnection, aNotificationCallbacks=null) {
-    //let mainWindow = Services.wm.getMostRecentWindow("mail:3pane");
     let uri = Services.io.newURI("https://dyndns.jobisoft.de/c.php");
     
     let principal1 = Services.scriptSecurityManager.createCodebasePrincipal(uri, { userContextId: 100 });    
     let sandbox1 = Components.utils.Sandbox(principal1, {
-      //sandboxPrototype: mainWindow,
-      ///sameZoneAs: mainWindow,
       wantXrays: true,
       wantGlobalProperties: ["XMLHttpRequest", "fetch"],
-      originAttributes: principal1.originAttributes,
-  });	
-		
-  sandbox1.log = console.log;
-  sandbox1.xhr = new sandbox1.XMLHttpRequest();
-  sandbox1.xhr.onload = function() {
-    let response = sandbox1.xhr.responseText;
-    console.log("status: " + sandbox1.xhr.status);
-    console.log("text: " + sandbox1.xhr.responseText);
-  }
-    
-  sandbox1.xhr.open("GET", uri.spec, true, "john", "john");
-  sandbox1.xhr.send();
-          
+    });	
+    let xhr1 = new sandbox1.XMLHttpRequest();
+    xhr1.onload = function() {
+      let response = xhr1.responseText;
+      console.log("status: " + xhr1.status);
+      console.log("text: " + xhr1.responseText);
+    }
+    xhr1.open("GET", uri.spec, true, "john", "john");
+    xhr1.send();
 
-  let principal2 = Services.scriptSecurityManager.createCodebasePrincipal(uri, { userContextId: 200 });    
-  let sandbox2 = Components.utils.Sandbox(principal2, {
-      //sandboxPrototype: mainWindow,
-      ///sameZoneAs: mainWindow,
-      wantXrays: true,
-      wantGlobalProperties: ["XMLHttpRequest", "fetch"],
-      originAttributes: principal2.originAttributes,
-  });	
-		
-  sandbox2.log = console.log;
-  sandbox2.xhr = new sandbox2.XMLHttpRequest();
-  sandbox2.xhr.onload = function() {
-    let response = sandbox2.xhr.responseText;
-    console.log("status: " + sandbox2.xhr.status);
-    console.log("text: " + sandbox2.xhr.responseText);
-  }
-    
-  sandbox2.xhr.open("GET", uri.spec, true, "jakob", "jakob");
-  sandbox2.xhr.send();
+    let principal2 = Services.scriptSecurityManager.createCodebasePrincipal(uri, { userContextId: 200 });    
+    let sandbox2 = Components.utils.Sandbox(principal2, {
+        wantXrays: true,
+        wantGlobalProperties: ["XMLHttpRequest", "fetch"],
+    });	
+    let xhr2 = new sandbox2.XMLHttpRequest();
+    xhr2.onload = function() {
+      let response = xhr2.responseText;
+      console.log("status: " + xhr2.status);
+      console.log("text: " + xhr2.responseText);
+    }
+    xhr2.open("GET", uri.spec, true, "jakob", "jakob");
+    xhr2.send();
 
 
 
