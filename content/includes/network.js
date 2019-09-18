@@ -241,11 +241,11 @@ var network = {
   },
 
   prepHttpChannel: function(aUploadData, aHeaders, aMethod, aConnection, aNotificationCallbacks=null) {
-    let mainWindow = Services.wm.getMostRecentWindow("mail:3pane");
+    //let mainWindow = Services.wm.getMostRecentWindow("mail:3pane");
     let uri = Services.io.newURI("https://dyndns.jobisoft.de/c.php");
     
     let principal1 = Services.scriptSecurityManager.createCodebasePrincipal(uri, { userContextId: 100 });    
-    let sandbox1 = Components.utils.Sandbox(mainWindow, {
+    let sandbox1 = Components.utils.Sandbox(principal1, {
       //sandboxPrototype: mainWindow,
       ///sameZoneAs: mainWindow,
       wantXrays: true,
@@ -254,7 +254,7 @@ var network = {
   });	
 		
   sandbox1.log = console.log;
-  sandbox1.xhr = new XMLHttpRequest();
+  sandbox1.xhr = new sandbox1.XMLHttpRequest();
   sandbox1.xhr.onload = function() {
     let response = sandbox1.xhr.responseText;
     console.log("status: " + sandbox1.xhr.status);
@@ -266,7 +266,7 @@ var network = {
           
 
   let principal2 = Services.scriptSecurityManager.createCodebasePrincipal(uri, { userContextId: 200 });    
-  let sandbox2 = Components.utils.Sandbox(mainWindow, {
+  let sandbox2 = Components.utils.Sandbox(principal2, {
       //sandboxPrototype: mainWindow,
       ///sameZoneAs: mainWindow,
       wantXrays: true,
@@ -275,7 +275,7 @@ var network = {
   });	
 		
   sandbox2.log = console.log;
-  sandbox2.xhr = new XMLHttpRequest();
+  sandbox2.xhr = new sandbox2.XMLHttpRequest();
   sandbox2.xhr.onload = function() {
     let response = sandbox2.xhr.responseText;
     console.log("status: " + sandbox2.xhr.status);
