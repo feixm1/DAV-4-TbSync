@@ -1,0 +1,1 @@
+  browser.tbsync.sayHello("DAV");

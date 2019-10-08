@@ -2,10 +2,10 @@
   "applications": {
     "gecko": {
       "id": "dav4tbsync@jobisoft.de",
-      "strict_min_version": "68.0",
-      "strict_max_version": "69.*"
+      "strict_min_version": "68.0"
     }
   },
+  "permissions": ["experiments.tbsync"],
   "manifest_version": 2,
   "name": "__MSG_extensionName__",
   "version": "1.4",
@@ -16,7 +16,7 @@
   "icons": {
     "32": "skin/sabredav32.png"
   },
-  "legacy": {
-    "type": "bootstrap"
+  "background": {
+    "scripts": ["content/background.js"]
   }
 }
